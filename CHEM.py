@@ -68,6 +68,9 @@ def LCM(a, b) -> int:
     return int(a_ * b_ * g)
 
 
+def testifitworks():
+    pass
+
 # Operations
 def SeparateMatterIntoElements(compound: str):
     # divide coordination compound
