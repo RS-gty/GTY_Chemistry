@@ -2,6 +2,7 @@
 # Author:RS-gty
 
 import re
+import numpy as np
 
 # Constants
 ELEMENTS = [['H', 1], ['He', 4],
@@ -28,6 +29,41 @@ ELEMENTS = [['H', 1], ['He', 4],
 # common_ions
 
 # List Operating
+def ListCheckDuplicates(list1: list) -> list:
+    list2 = []
+    for i in list1:
+        if i not in list2:
+            list2.append(i)
+        else:
+            pass
+    return list2
+
+
+def MergeLists(list1: list, list2: list) -> list:
+    list3 = []
+    for i in list1:
+        list3.append(i)
+    for j in list2:
+        list3.append(j)
+    return list3
+
+
+def GenerateList(integer: int, length: int) -> list:
+    list1 = []
+    for i in range(length - 1):
+        list1.append(0)
+    list1.append(integer)
+    return list1
+
+
+# Matrix Operating
+def GenerateMatrix(integer: int, column: int) -> np.array:
+    list1 = []
+    for i in range(column - 1):
+        list1.append([0])
+    list1.append([integer])
+    return np.array(list1)
+
 
 # String Operating
 def DivideStringWithInt(string: str):
@@ -149,12 +185,28 @@ def CalculatingRelativeMolecularMass(compound: str) -> int:
     for element in elements:
         for form in ELEMENTS:
             if element[1] == form[0]:
-                mass += int(element[0])*ELEMENTS[index][1]
+                mass += int(element[0]) * ELEMENTS[index][1]
                 break
             else:
                 index += 1
         index = 0
     return mass
+
+
+def SetCoefficientOfMatter(compound: str, elements: list):
+    compound_list = SeparateMatterIntoElements(compound)
+    element_list = GenerateList(0, len(elements))
+    index = 0
+    for i in compound_list:
+        for j in elements:
+            if i[1] == j:
+                element_list[index] += int(i[0])
+                break
+            else:
+                pass
+            index += 1
+        index = 0
+    print(element_list)
 
 
 # Atom Class
@@ -228,10 +280,27 @@ class IonicCompound(object):
 
 class MolecularCompound(object):
     def __init__(self):
-        self.element_count = []
-        self.element = []
+        self.element_and_count = []
+
+
+# Equation Class
+class Equation(object):
+    def __init__(self, reactant: list, resultant: list):
+        self.reactants = reactant
+        self.resultants = resultant
+        self.matters = MergeLists(self.reactants, self.resultants)
+        self.reactants_coefficients = []
+        self.resultants_coefficients = []
+        # self_balance
+        elements = []
+        for reactant in self.resultants:
+            for elements_reactants in SeparateMatterIntoElements(reactant):
+                elements.append(elements_reactants[1])
+        elements = ListCheckDuplicates(elements)
+        print(elements)
 
 
 if __name__ == '__main__':
-    M1 = 'BaSO4'
-    print(CalculatingRelativeMolecularMass(M1))
+    E1 = Equation(['Cu', 'HNO3'], ['Cu(NO3)2', 'NO', 'H2O'])
+    print(SetCoefficientOfMatter('H2SO4', ['H', 'S', 'O', 'C']))
+
