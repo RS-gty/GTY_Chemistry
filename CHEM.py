@@ -4,8 +4,23 @@
 # import decimal
 import re
 
-
 # Constants
+ELEMENTS = [['H', 1], ['He', 4],
+            ['Li', 7], ['Be', 9], ['B', 11], ['C', 12], ['N', 14], ['O', 16], ['F', 19],
+            ['Ne', 20],
+            ['Na', 23], ['Mg', 24], ['Al', 27], ['Si', 28], ['P', 31], ['S', 32],
+            ['Cl', 35.5], ['Ar', 40],
+            ['K', 39], ['Ca', 40], ['Sc', 45], ['Ti', 48], ['V', 51], ['Cr', 52],
+            ['Mn', 55], ['Fe', 56], ['Co', 59], ['Ni', 59], ['Cu', 64], ['Zn', 65],
+            ['Ga', 70], ['Ge', 73], ['As', 75], ['Se', 79], ['Br', 80], ['Kr', 85],
+            ['Rb', 85.5], ['Sr', 88], ['Y', 89], ['Zr', 91], ['Nb', 93], ['Mo', 96],
+            ['Tc', 99], ['Ru', 101], ['Rh', 103], ['Pd', 106.5], ['Ag', 108], ['Cd', 112.5],
+            ['In', 115], ['Sn', 119], ['Sb', 122], ['Te', 128], ['I', 127], ['Xe', 131],
+            ['Cs', 133], ['Ba', 137], 'LANTHANIDE', ['Hf', 178.5], ['Ta', 181], ['W', 184],
+            ['Re', 186], ['Os', 190], ['Ir', 192], ['Pt', 195], ['Au', 197], ['Hg', 200.5],
+            ['Tl', 204], ['Pb', 207], ['Bi', 209], ['Po', 209], ['At', 210], ['Rn', 222],
+            ]
+
 
 # common_ions
 
@@ -18,17 +33,25 @@ def DivideStringWithInt(string: str):
         string1 += '1'
     else:
         pass
-    print(string1)
     list1 = [string1[-1], string1[0:-1]]
     return list1
 
 
-def RemoveParentheses(string: str):
+def RemoveParentheses_1(string: str):
+    string1 = re.findall('[{][A-Za-z0-9()]*[}]', string)[0][1:-1]
+    coefficient1 = re.findall('[1-9]+', re.findall('[}][0-9]+', string)[0])[0]
+    list1 = []
+    for part in re.findall('[A-Z][^A-Z()]*[0-9]*|[(][a-zA-Z1-9]*[)][0-9]*|[{][A-Za-z1-9()]*[}][0-9]*', string1):
+        list1.append(DivideStringWithInt(part)[1] + str(int(DivideStringWithInt(part)[0]) * int(coefficient1)))
+    return list1
+
+
+def RemoveParentheses_2(string: str):
     string1 = re.findall('[(][A-Za-z0-9]*[)]', string)[0][1:-1]
     coefficient1 = re.findall('[1-9]+', re.findall('[)][0-9]+', string)[0])[0]
     list1 = []
     for part in re.findall('[A-Z][^A-Z()]*[0-9]*|[(][a-zA-Z1-9]*[)][0-9]*|[{][A-Za-z1-9()]*[}][0-9]*', string1):
-        list1.append([int(DivideStringWithInt(part)[0])*int(coefficient1), DivideStringWithInt(part)[1]])
+        list1.append([str(int(DivideStringWithInt(part)[0]) * int(coefficient1)), DivideStringWithInt(part)[1]])
     return list1
 
 
@@ -54,10 +77,6 @@ def ReplaceElementsInString(string: str, old: str, new: str) -> str:
 
 def ClearElementInString(string: str, element: str) -> str:
     return MergeListToString(string.split(element))
-
-
-def GetCompletedList(string1: str, string2: str):
-    pass
 
 
 def IsMultipleCapitalLetters(string: str) -> bool:
@@ -94,17 +113,30 @@ def LCM(a, b) -> int:
 
 
 # Operations
-def SeparateMatterIntoElements(compound: str):
+def SeparateMatterIntoElements(compound: str) -> list:
     # divide coordination compound
     compound = ReplaceElementsInString((ReplaceElementsInString(compound, '[', '{')), ']', '}')
     separation_step1 = compound.split('.')
     # divide compound
     separation_step2 = []
+    separation_step3 = []
     for parts_1 in separation_step1:
         for parts_2 in re.findall('[A-Z][^A-Z()]*[0-9]*|[(][a-zA-Z1-9]*[)][0-9]*|[{][A-Za-z1-9()]*[}][0-9]*', parts_1):
             separation_step2.append(parts_2)
-
-    print(RemoveParentheses('(SO4)3'))
+    # remove parentheses1
+    for parts_3 in separation_step2:
+        if '{' in parts_3:
+            if '(' in parts_3:
+                for p in RemoveParentheses_1(parts_3):
+                    if '(' in p:
+                        separation_step3 += (RemoveParentheses_2(p))
+                    else:
+                        separation_step3.append(DivideStringWithInt(p))
+        elif '(' in parts_3:
+            separation_step3 += (RemoveParentheses_2(parts_3))
+        else:
+            separation_step3.append(DivideStringWithInt(parts_3))
+    return separation_step3
 
 
 # Atom Class
@@ -184,8 +216,4 @@ class MolecularCompound(object):
 
 if __name__ == '__main__':
     M1 = 'Cu2(OH)2CO3'
-    #M2 = 'KAl(SO4)3.12H2O'
-    #M3 = '[Ag(NH3)2]2SO4'
-    SeparateMatterIntoElements(M1)
-    #SeparateMatterIntoElements(M2)
-    #SeparateMatterIntoElements(M3)
+    print(SeparateMatterIntoElements(M1))
