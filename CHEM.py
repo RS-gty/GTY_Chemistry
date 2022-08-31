@@ -1,7 +1,6 @@
-# import numpy as np
-# from numpy import sqrt
-# from itertools import combinations
-# import decimal
+# coding:utf-8
+# Author:RS-gty
+
 import re
 
 # Constants
@@ -127,7 +126,7 @@ def SeparateMatterIntoElements(compound: str) -> list:
     for parts_1 in separation_step1:
         for parts_2 in re.findall('[A-Z][^A-Z()]*[0-9]*|[(][a-zA-Z1-9]*[)][0-9]*|[{][A-Za-z1-9()]*[}][0-9]*', parts_1):
             separation_step2.append(parts_2)
-    # remove parentheses1
+    # remove parentheses
     for parts_3 in separation_step2:
         if '{' in parts_3:
             if '(' in parts_3:
