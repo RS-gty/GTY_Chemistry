@@ -139,6 +139,21 @@ def SeparateMatterIntoElements(compound: str) -> list:
     return separation_step3
 
 
+def CalculatingRelativeMolecularMass(compound: str) -> int:
+    elements = SeparateMatterIntoElements(compound)
+    index = 0
+    mass = 0
+    for element in elements:
+        for form in ELEMENTS:
+            if element[1] == form[0]:
+                mass += int(element[0])*ELEMENTS[index][1]
+                break
+            else:
+                index += 1
+        index = 0
+    return mass
+
+
 # Atom Class
 class Atom(object):
     def __init__(self, element: str, charge: int):
@@ -215,5 +230,5 @@ class MolecularCompound(object):
 
 
 if __name__ == '__main__':
-    M1 = 'Cu2(OH)2CO3'
-    print(SeparateMatterIntoElements(M1))
+    M1 = 'BaSO4'
+    print(CalculatingRelativeMolecularMass(M1))
