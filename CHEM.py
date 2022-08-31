@@ -26,9 +26,27 @@ ELEMENTS = [['H', 1], ['He', 4],
             ['Tl', 204], ['Pb', 207], ['Bi', 209], ['Po', 209], ['At', 210], ['Rn', 222]]
 
 
-# common_ions
-
 # List Operating
+def PopList(list1: list, element) -> list:
+    list2 = []
+    if element in list1:
+        for i in list1:
+            if i == element:
+                pass
+            else:
+                list2.append(i)
+        return list2
+    else:
+        return list1
+
+
+def NegativeList(list1: list) -> list:
+    list2 = []
+    for i in list1:
+        list2.append(-i)
+    return list2
+
+
 def ListCheckDuplicates(list1: list) -> list:
     list2 = []
     for i in list1:
@@ -65,8 +83,34 @@ def GenerateMatrix(integer: int, column: int) -> np.array:
     return np.array(list1)
 
 
+def CheckMatrixSingularly(matrix1: np.array) -> np.array:
+    list1 = matrix1.tolist()
+    line = []
+    n = 0
+    for index in range(len(list1[0])):
+        for i in list1:
+            if i[index] == 0:
+                line1 = np.array(i)
+            else:
+                line1 = np.true_divide(np.array(i), i[index])
+            for j in list1:
+                if j[index] == 0:
+                    line2 = np.array(j)
+                else:
+                    line2 = np.true_divide(np.array(j), j[index])
+                if line1.tolist() == line2.tolist() and i != j:
+                    line = i
+                    n = 1
+        if n == 1:
+            list2 = PopList(list1, line)
+            break
+        else:
+            list2 = list1
+    return np.array(list2)
+
+
 # String Operating
-def DivideStringWithInt(string: str):
+def DivideStringWithInt(string: str) -> list:
     string1 = string
     if not re.findall('[0-9]', string):
         string1 += '1'
@@ -76,7 +120,7 @@ def DivideStringWithInt(string: str):
     return list1
 
 
-def RemoveParentheses_1(string: str):
+def RemoveParentheses_1(string: str) -> list:
     string1 = re.findall('[{][A-Za-z0-9()]*[}]', string)[0][1:-1]
     coefficient1 = re.findall('[1-9]+', re.findall('[}][0-9]+', string)[0])[0]
     list1 = []
@@ -85,7 +129,7 @@ def RemoveParentheses_1(string: str):
     return list1
 
 
-def RemoveParentheses_2(string: str):
+def RemoveParentheses_2(string: str) -> list:
     string1 = re.findall('[(][A-Za-z0-9]*[)]', string)[0][1:-1]
     coefficient1 = re.findall('[1-9]+', re.findall('[)][0-9]+', string)[0])[0]
     list1 = []
@@ -94,7 +138,7 @@ def RemoveParentheses_2(string: str):
     return list1
 
 
-def MergeListToString(operation_list: list):
+def MergeListToString(operation_list: list) -> str:
     merged_string = ''
     for strings in operation_list:
         merged_string += strings
@@ -193,7 +237,7 @@ def CalculatingRelativeMolecularMass(compound: str) -> int:
     return mass
 
 
-def SetCoefficientOfMatter(compound: str, elements: list):
+def SetCoefficientOfMatter(compound: str, elements: list) -> list:
     compound_list = SeparateMatterIntoElements(compound)
     element_list = GenerateList(0, len(elements))
     index = 0
@@ -206,7 +250,7 @@ def SetCoefficientOfMatter(compound: str, elements: list):
                 pass
             index += 1
         index = 0
-    print(element_list)
+    return element_list
 
 
 # Atom Class
@@ -293,14 +337,20 @@ class Equation(object):
         self.resultants_coefficients = []
         # self_balance
         elements = []
-        for reactant in self.resultants:
+        list_a = []
+        for reactant in self.reactants:
             for elements_reactants in SeparateMatterIntoElements(reactant):
                 elements.append(elements_reactants[1])
         elements = ListCheckDuplicates(elements)
-        print(elements)
+        for reactant in self.reactants:
+            list_a.append(SetCoefficientOfMatter(reactant, elements))
+        for resultant in self.resultants:
+            list_a.append(NegativeList(SetCoefficientOfMatter(resultant, elements)))
+        matrix_a = np.array(list_a).T
+        list_b = CheckMatrixSingularly(matrix_a).tolist()
+        print(list_b)
 
 
 if __name__ == '__main__':
     E1 = Equation(['Cu', 'HNO3'], ['Cu(NO3)2', 'NO', 'H2O'])
-    print(SetCoefficientOfMatter('H2SO4', ['H', 'S', 'O', 'C']))
-
+    E1 = Equation(['Fe', 'CuSO4'], ['Cu', 'FeSO4'])
