@@ -3,6 +3,7 @@
 
 import re
 import numpy as np
+import decimal
 
 # Constants
 ELEMENTS = [['H', 1], ['He', 4],
@@ -85,6 +86,7 @@ def GenerateMatrix(integer: int, column: int) -> np.array:
 
 def CheckMatrixSingularly(matrix1: np.array) -> np.array:
     list1 = matrix1.tolist()
+    list2 = []
     line = []
     n = 0
     for index in range(len(list1[0])):
@@ -338,6 +340,7 @@ class Equation(object):
         # self_balance
         elements = []
         list_a = []
+        multiplier = 1
         for reactant in self.reactants:
             for elements_reactants in SeparateMatterIntoElements(reactant):
                 elements.append(elements_reactants[1])
@@ -348,9 +351,67 @@ class Equation(object):
             list_a.append(NegativeList(SetCoefficientOfMatter(resultant, elements)))
         matrix_a = np.array(list_a).T
         list_b = CheckMatrixSingularly(matrix_a).tolist()
-        print(list_b)
+        list_b += [GenerateList(1, len(matrix_a[0]))]
+        # noinspection PyTypeChecker
+        matrix_b = np.array(list_b)
+        matrix_c = GenerateMatrix(1, len(matrix_a[0]))
+        coefficient = np.linalg.solve(matrix_b, matrix_c)
+        while multiplier <= 1024:
+            n = 0
+            multipled_result = coefficient * multiplier
+            for i in multipled_result:
+                round_i = decimal.Decimal(i[0]).quantize(decimal.Decimal("0.01"), rounding="ROUND_HALF_UP")
+                if np.float64(round_i).is_integer():
+                    pass
+                else:
+                    n = 1
+            if n == 0:
+                break
+            else:
+                multiplier += 1
+        list_coefficient = []
+        for i in (coefficient * multiplier):
+            coefficient_1 = int(decimal.Decimal(i[0]).quantize(decimal.Decimal("0.01"), rounding="ROUND_HALF_UP"))
+            list_coefficient.append(coefficient_1)
+        for i in range(len(self.reactants)):
+            self.reactants_coefficients.append(list_coefficient[i])
+        for i in range(len(self.resultants)):
+            self.resultants_coefficients.append(list_coefficient[i + len(self.reactants_coefficients)])
+
+    def self_display(self):
+        reactant_text = ''
+        resultant_text = ''
+        n1 = 0
+        n2 = 0
+        for i in range(len(self.reactants_coefficients)):
+            if n1 == 0:
+                pass
+            else:
+                reactant_text += ' + '
+            if self.reactants_coefficients[i] == 1:
+                reactant_text += self.reactants[i]
+            elif self.reactants_coefficients[i] == 0:
+                pass
+            else:
+                reactant_text += str(self.reactants_coefficients[i]) + self.reactants[i]
+            n1 = 1
+        for i in range(len(self.resultants_coefficients)):
+            if n2 == 0:
+                pass
+            else:
+                resultant_text += ' + '
+            if self.resultants_coefficients[i] == 1:
+                resultant_text += self.resultants[i]
+            elif self.resultants_coefficients[i] == 0:
+                pass
+            else:
+                resultant_text += str(self.resultants_coefficients[i]) + self.resultants[i]
+            n2 = 1
+        print(reactant_text + ' ----> ' + resultant_text)
 
 
 if __name__ == '__main__':
     E1 = Equation(['Cu', 'HNO3'], ['Cu(NO3)2', 'NO', 'H2O'])
-    E1 = Equation(['Fe', 'CuSO4'], ['Cu', 'FeSO4'])
+    E2 = Equation(['Fe', 'CuSO4'], ['Cu', 'FeSO4'])
+    E1.self_display()
+    E2.self_display()
