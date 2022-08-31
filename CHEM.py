@@ -12,8 +12,31 @@ import re
 # List Operating
 
 # String Operating
-def MergeListToString():
-    pass
+def DivideStringWithInt(string: str):
+    string1 = string
+    if not re.findall('[0-9]', string):
+        string1 += '1'
+    else:
+        pass
+    print(string1)
+    list1 = [string1[-1], string1[0:-1]]
+    return list1
+
+
+def RemoveParentheses(string: str):
+    string1 = re.findall('[(][A-Za-z0-9]*[)]', string)[0][1:-1]
+    coefficient1 = re.findall('[1-9]+', re.findall('[)][0-9]+', string)[0])[0]
+    list1 = []
+    for part in re.findall('[A-Z][^A-Z()]*[0-9]*|[(][a-zA-Z1-9]*[)][0-9]*|[{][A-Za-z1-9()]*[}][0-9]*', string1):
+        list1.append([int(DivideStringWithInt(part)[0])*int(coefficient1), DivideStringWithInt(part)[1]])
+    return list1
+
+
+def MergeListToString(operation_list: list):
+    merged_string = ''
+    for strings in operation_list:
+        merged_string += strings
+    return merged_string
 
 
 def ReplaceElementsInString(string: str, old: str, new: str) -> str:
@@ -30,6 +53,10 @@ def ReplaceElementsInString(string: str, old: str, new: str) -> str:
 
 
 def ClearElementInString(string: str, element: str) -> str:
+    return MergeListToString(string.split(element))
+
+
+def GetCompletedList(string1: str, string2: str):
     pass
 
 
@@ -48,7 +75,6 @@ def IsMultipleCapitalLetters(string: str) -> bool:
 
 # Calculate
 def GCD(a, b) -> int:
-    """最大公因数"""
     if a < b:
         temp = b
         b = a
@@ -61,28 +87,24 @@ def GCD(a, b) -> int:
 
 
 def LCM(a, b) -> int:
-    """最小公倍数"""
     g = GCD(a, b)
     a_ = a / g
     b_ = b / g
     return int(a_ * b_ * g)
 
 
-def testifitworks():
-    pass
-
 # Operations
 def SeparateMatterIntoElements(compound: str):
     # divide coordination compound
     compound = ReplaceElementsInString((ReplaceElementsInString(compound, '[', '{')), ']', '}')
-
     separation_step1 = compound.split('.')
-    print(separation_step1)
-    # remove parentheses
-    for separated_parts in separation_step1:
-        print(re.findall('[{][A-Za-z1-9()]*[}][0-9]', separated_parts))
-    separation_step2 = re.findall('[A-Z][^A-Z][0-9]*|[(][a-zA-Z1-9]*[)][0-9]*', 'Cu14(OH)12(SO4)13')
-    print(separation_step2)
+    # divide compound
+    separation_step2 = []
+    for parts_1 in separation_step1:
+        for parts_2 in re.findall('[A-Z][^A-Z()]*[0-9]*|[(][a-zA-Z1-9]*[)][0-9]*|[{][A-Za-z1-9()]*[}][0-9]*', parts_1):
+            separation_step2.append(parts_2)
+
+    print(RemoveParentheses('(SO4)3'))
 
 
 # Atom Class
@@ -162,8 +184,8 @@ class MolecularCompound(object):
 
 if __name__ == '__main__':
     M1 = 'Cu2(OH)2CO3'
-    M2 = 'KAl(SO4)3.12H2O'
-    M3 = '[Ag(NH3)2]2SO4'
+    #M2 = 'KAl(SO4)3.12H2O'
+    #M3 = '[Ag(NH3)2]2SO4'
     SeparateMatterIntoElements(M1)
-    SeparateMatterIntoElements(M2)
-    SeparateMatterIntoElements(M3)
+    #SeparateMatterIntoElements(M2)
+    #SeparateMatterIntoElements(M3)
