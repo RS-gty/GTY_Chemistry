@@ -2,6 +2,7 @@
 # Author:RS-gty
 
 import re
+import time
 import numpy as np
 import decimal
 
@@ -320,9 +321,6 @@ class IonicCompound(object):
     def display(self):
         print(self.name)
 
-    def r(self):
-        return self.name
-
 
 class MolecularCompound(object):
     def __init__(self):
@@ -411,7 +409,10 @@ class Equation(object):
 
 
 if __name__ == '__main__':
+    tic = time.perf_counter()
+    M1 = '[Ag(NH3)2]2SO4'
+    SeparateMatterIntoElements(M1)
+    tac = time.perf_counter()
+    print(tac-tic)
     E1 = Equation(['Cu', 'HNO3'], ['Cu(NO3)2', 'NO', 'H2O'])
-    E2 = Equation(['Fe', 'CuSO4'], ['Cu', 'FeSO4'])
     E1.self_display()
-    E2.self_display()
