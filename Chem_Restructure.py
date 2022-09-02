@@ -21,7 +21,7 @@ class Compound:
         :param compound: 物质化学式
         :param n: 物质数量
         """
-        quality, elements_amonunt = 0, {e: 0 for e in re.findall('[A-Z][a-z]*', compound)}
+        quality, elements_amount = 0, {e: 0 for e in re.findall('[A-Z][a-z]*', compound)}
         for part in compound.split('.'):
             n *= int(re.findall(r'^\d*', part)[0]) if re.findall(r'^\d*', part).pop(0) else 1
             part_quality, part_elements_amount = 0, {e: 0 for e in re.findall('[A-Z][a-z]*', compound)}
@@ -37,15 +37,27 @@ class Compound:
                 else:
                     result = \
                         Compound(re.findall(r'\((.*)\)', one_element)[0],
-                                 int(re.findall(r'\d*$', one_element)[0])).elements_amonunt
+                                 int(re.findall(r'\d*$', one_element)[0])).elements_amount
                     for key in result.keys():
                         part_elements_amount[key] += result[key]
             quality += part_quality * n
             for key in part_elements_amount.keys():
-                elements_amonunt[key] += part_elements_amount[key] * n
-        self.quality: int = quality
-        self.elements_amonunt: Dict = elements_amonunt
-        self.name: AnyStr = compound
+                elements_amount[key] += part_elements_amount[key] * n
+        self._quality: int = quality
+        self._elements_amount: Dict = elements_amount
+        self._name: AnyStr = compound
+
+    @property
+    def name(self) -> AnyStr:
+        return self._name
+    
+    @property
+    def quality(self) -> int:
+        return self._quality
+    
+    @property
+    def elements_amount(self) -> Dict:
+        return self._elements_amount
 
 
 def equation(reactants_tuple: Tuple[Compound, ...], product_tuple: Tuple[Compound, ...]) -> Tuple[int, ...]:
@@ -59,7 +71,7 @@ def equation(reactants_tuple: Tuple[Compound, ...], product_tuple: Tuple[Compoun
     general_list, elements_amonunt = [], {x: 0 for x in ELEMENTS.keys()}
     for substance_list, list_type in zip((reactants_tuple, product_tuple), (1, 0)):
         for part in substance_list:
-            part_elements_amonunt_dict, part_elements_amonunt = elements_amonunt.copy(), part.elements_amonunt
+            part_elements_amonunt_dict, part_elements_amonunt = elements_amonunt.copy(), part.elements_amount
             for key in part_elements_amonunt.keys():
                 part_elements_amonunt_dict[key] = part_elements_amonunt[key]
             general_list.append(list(part_elements_amonunt_dict.values()) + [0]) if list_type else general_list.append(
