@@ -3,9 +3,9 @@
 # @Author  : 之落花--falling_flowers
 # @File    : Chem_Restructure.py
 # @Software: PyCharm
+import numpy as pd
 import re
 from typing import *
-import numpy as pd
 
 ELEMENTS = dict(H=1, He=4, Li=7, Be=9, B=11, C=12, N=14, O=16, F=19, Ne=20, Na=23, Mg=24, Al=27, Si=28, P=31, S=32,
                 Cl=35.5, Ar=40, K=39, Ca=40, Sc=45, Ti=48, V=51, Cr=52, Mn=55, Fe=56, Co=59, Ni=59, Cu=64, Zn=65, Ga=70,
@@ -47,14 +47,21 @@ class Compound:
         self._elements_amount: Dict = elements_amount
         self._name: AnyStr = compound
 
+    @classmethod
+    def group(cls, group: Tuple[str, ...]) -> Tuple["Compound", ...]:
+        compound_group = []
+        for i in group:
+            compound_group.append(Compound(i))
+        return tuple(compound_group)
+
     @property
     def name(self) -> AnyStr:
         return self._name
-    
+
     @property
     def quality(self) -> int:
         return self._quality
-    
+
     @property
     def elements_amount(self) -> Dict:
         return self._elements_amount
@@ -96,5 +103,5 @@ def equation(reactants_tuple: Tuple[Compound, ...], product_tuple: Tuple[Compoun
 
 
 if __name__ == '__main__':
-    print(Compound('(NH4)2SO4.2H2O').name)
-    equation((Compound('(NH4)2SO4.2H2O'), Compound('NaOH')), (Compound('NH3'), Compound('H2O'), Compound('Na2SO4')))
+    print(Compound('(NH4)2SO4.2H2O').elements_amount)
+    equation(Compound.group(('KMnO4', 'H2O2', 'H2SO4')), Compound.group(('K2SO4', 'MnSO4', 'O2', 'H20')))
