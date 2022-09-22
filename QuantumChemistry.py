@@ -4,6 +4,7 @@ import random as r
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
+from WaveFunctions import *
 
 
 # Calculating
@@ -28,7 +29,7 @@ def rand(row: int, column: int) -> np.ndarray:
     return np.array(matrix_list)
 
 
-def power(x: int, b, n: int):
+def power(x: int, b, n):
     """
     :return: a * b ^ n
     """
@@ -83,51 +84,33 @@ def SphericalTo3DAxis_Matrix(array: list):
     rad = []
     the = []
     ph = []
-    for i in range(len(radius)):
-        rad.append(float(radius[i]) * np.sin(theta[i]) * np.cos(phi[i]))
-        the.append(float(radius[i]) * np.sin(theta[i]) * np.sin(phi[i]))
-        ph.append(float(radius[i]) * np.cos(theta[i]))
+    for i in range(len(radius[0])):
+        rad.append(float(radius[0][i]) * np.sin(theta[0][i]) * np.cos(phi[0][i]))
+        the.append(float(radius[0][i]) * np.sin(theta[0][i]) * np.sin(phi[0][i]))
+        ph.append(float(radius[0][i]) * np.cos(theta[0][i]))
     return [np.array(rad), np.array(the), np.array(ph)]
 
 
-# Wave Functions
-def RadialWaveFunction_1s(radius):
-    return 2 * np.sqrt(1 / power(1, 0.529, 3)) * np.exp(-radius / 0.529)
-
-
-def AngleWaveFunction_1s(theta, phi):
-    return np.sqrt(1 / 4 * np.pi)
+def matrix_abs(a: np.ndarray):
+    matrix_list = []
+    for i in a:
+        matrix_list.append(abs(i))
+    return np.array(matrix_list)
 
 
 if __name__ == '__main__':
-    """
-    dmax = 1.1
-    r0 = 2.5
-    a = 0.529
-    s = power(2, 10, 6)  # 2 * 10 ^ 7 采样点数
-    r_sampled = r0 * rand(1, s)
-    d_sampled = dmax * rand(1, s)
-    distance = (4 / power(1, a, 3)) * (power(1, r_sampled, 2)) * exp_(-2 * r_sampled / a)
-    q = find(distance, d_sampled)
-    m = len(q)
-    t = 2 * np.pi * rand(1, m)
+    sample_number = 1000
 
-    plt.scatter(q * np.sin(t), q * np.cos(t), s=0.00001)
-    plt.show()
+    sample = rand(1, sample_number) * 10
+    sample_theta = rand(1, sample_number) * 2 * np.pi
+    sample_phi = rand(1, sample_number) * 2 * np.pi
 
-    print(SphericalTo3DAxis(np.array([np.sqrt(3), np.pi / 2 - np.arctan(np.sqrt(2) / 2), np.pi / 4])))
-    """
-    a = np.arange(0, 4, 0.00005)
-    b = RadialWaveFunction_1s(a)
-    c = 200000
-    r_sampled = 2.5 * rand(1, c)
-    theta = rand(1, c) * 2 * np.pi
-    phi = rand(1, c) * 2 * np.pi
+    sample_y = RadialWaveFunction_3d(sample) ** 2
+    sample_angle = AngleWaveFunction_3dz2(sample_theta, sample_phi)
+    sample_radius = np.multiply(sample_y, sample_angle)
 
-    F = SphericalTo3DAxis_Matrix([r_sampled[0].tolist(), theta.tolist()[0], phi.tolist()[0]])
-    f = np.array(F)
+    t_c = SphericalTo3DAxis_Matrix([matrix_abs(sample_radius).tolist(), sample_theta.tolist(), sample_phi.tolist()])
 
     ax = plt.axes(projection='3d')
-    ax.scatter3D(f[0], f[1], f[2], 'gray', s=0.00001)
-    ax.set_title('3D line plot')
+    ax.scatter3D(t_c[0], t_c[1], t_c[2], s=0.1, c=sample_y, cmap='cool')
     plt.show()
