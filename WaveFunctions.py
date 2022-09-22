@@ -1,5 +1,6 @@
 import numpy as np
 from QuantumChemistry import *
+
 # Constants
 a0 = 0.529  # 52.9pm
 
@@ -47,4 +48,79 @@ def AngleWaveFunction_3dz2(theta: np.ndarray, phi: np.ndarray):
 
     for i in range(theta.size):
         matrix_list.append(np.sqrt(5 / (16 * np.pi)) * cosine[i])
+    return np.array(matrix_list)
+
+
+def AngleWaveFunction_3dxz(theta: np.ndarray, phi: np.ndarray):
+    matrix_list = []
+    sine1 = []
+    cosine1 = []
+    cosine2 = []
+    for i in range(theta.size):
+        sine1.append(power(1, np.sin(theta.tolist()[0][i]), 1))
+    for i in range(theta.size):
+        cosine1.append(power(1, np.cos(theta.tolist()[0][i]), 1))
+    for i in range(phi.size):
+        cosine2.append(power(1, np.cos(phi.tolist()[0][i]), 1))
+
+    for i in range(theta.size):
+        matrix_list.append(np.sqrt(5 / (4 * np.pi)) * sine1[i] * cosine1[i] * cosine2[i])
+
+    return np.array(matrix_list)
+
+
+# 4f
+
+def RadialWaveFunction_4f(radius):
+    return (1 / (768 * np.sqrt(35))) * power(1, (1 / a0), 1.5) * power(1, radius / a0, 3) * exp_(-1 * radius / (4 * a0))
+
+
+def AngleWaveFunction_4fz3(theta: np.ndarray, phi: np.ndarray):
+    matrix_list = []
+    cosine1 = []
+    cosine2 = []
+    for i in range(theta.size):
+        cosine1.append(power(5, np.cos(theta.tolist()[0][i]), 3))
+    for i in range(theta.size):
+        cosine2.append(power(3, np.cos(theta.tolist()[0][i]), 1))
+
+    for i in range(theta.size):
+        matrix_list.append(np.sqrt(7 / (16 * np.pi)) * (cosine1[i] - cosine2[i]))
+
+    return np.array(matrix_list)
+
+
+def AngleWaveFunction_4fxz2(theta: np.ndarray, phi: np.ndarray):
+    matrix_list = []
+    sine1 = []
+    cosine1 = []
+    cosine2 = []
+    for i in range(theta.size):
+        sine1.append(power(1, np.cos(theta.tolist()[0][i]), 1))
+    for i in range(theta.size):
+        cosine1.append(power(5, np.cos(theta.tolist()[0][i]), 2) - 1)
+    for i in range(phi.size):
+        cosine2.append(power(1, np.cos(phi.tolist()[0][i]), 1))
+
+    for i in range(theta.size):
+        matrix_list.append(np.sqrt(42 / (64 * np.pi)) * sine1[i] * cosine1[i] * cosine2[i])
+
+    return np.array(matrix_list)
+
+
+def AngleWaveFunction_4fx3mxy2(theta: np.ndarray, phi: np.ndarray):
+    matrix_list = []
+    sine1 = []
+    cosine1 = []
+    cosine2 = []
+    for i in range(theta.size):
+        sine1.append(power(1, np.cos(theta.tolist()[0][i]), 2))
+    for i in range(theta.size):
+        cosine1.append(power(1, np.cos(theta.tolist()[0][i]), 1))
+    for i in range(phi.size):
+        cosine2.append(power(1, 2 * np.cos(phi.tolist()[0][i]), 1))
+
+    for i in range(theta.size):
+        matrix_list.append(np.sqrt(105 / (16 * np.pi)) * sine1[i] * cosine1[i] * cosine2[i])
+
     return np.array(matrix_list)

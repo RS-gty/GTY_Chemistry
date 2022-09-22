@@ -99,18 +99,18 @@ def matrix_abs(a: np.ndarray):
 
 
 if __name__ == '__main__':
-    sample_number = 1000
+    sample_number = 50000
 
     sample = rand(1, sample_number) * 10
     sample_theta = rand(1, sample_number) * 2 * np.pi
     sample_phi = rand(1, sample_number) * 2 * np.pi
 
-    sample_y = RadialWaveFunction_3d(sample) ** 2
-    sample_angle = AngleWaveFunction_3dz2(sample_theta, sample_phi)
+    sample_y = RadialWaveFunction_4f(sample) ** 2
+    sample_angle = AngleWaveFunction_4fx3mxy2(sample_theta, sample_phi)
     sample_radius = np.multiply(sample_y, sample_angle)
 
     t_c = SphericalTo3DAxis_Matrix([matrix_abs(sample_radius).tolist(), sample_theta.tolist(), sample_phi.tolist()])
 
     ax = plt.axes(projection='3d')
-    ax.scatter3D(t_c[0], t_c[1], t_c[2], s=0.1, c=sample_y, cmap='cool')
+    ax.scatter3D(t_c[0], t_c[1], t_c[2], s=0.05, c=sample_y, cmap='cool')
     plt.show()
