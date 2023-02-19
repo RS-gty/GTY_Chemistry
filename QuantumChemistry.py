@@ -8,6 +8,8 @@ from WaveFunctions import *
 
 
 # Calculating
+lc = locals()
+
 def rand(row: int, column: int) -> np.ndarray:
     """
     Generate a matrix with random floats from 0 to 1
@@ -26,6 +28,13 @@ def rand(row: int, column: int) -> np.ndarray:
             column_list = []
         else:
             pass
+    return np.array(matrix_list)
+
+
+def accurate(num, sample_: int):
+    matrix_list = []
+    for i in range(sample_):
+        matrix_list.append(num)
     return np.array(matrix_list)
 
 
@@ -98,19 +107,36 @@ def matrix_abs(a: np.ndarray):
     return np.array(matrix_list)
 
 
-if __name__ == '__main__':
-    sample_number = 50000
-
+def simulate(orbit_l=0, sample_number=10000):
+    l = ['s', 'p', 'dz2', 'fz3']
     sample = rand(1, sample_number) * 10
+
     sample_theta = rand(1, sample_number) * 2 * np.pi
     sample_phi = rand(1, sample_number) * 2 * np.pi
 
-    sample_y = RadialWaveFunction_4f(sample) ** 2
-    sample_angle = AngleWaveFunction_4fx3mxy2(sample_theta, sample_phi)
+    sample_y = 4 * np.pi * np.multiply(sample, sample) * lc['RadialWaveFunction_'+str(orbit_l+1)+l[orbit_l][0]](sample) ** 2
+    sample_angle = np.sqrt(1/3)*(AngleWaveFunction_1s(sample_theta, sample_phi)+np.sqrt(2)*AngleWaveFunction_2px(sample_theta, sample_phi))
+    sample_angle2 = np.sqrt(1/3)*(AngleWaveFunction_1s(sample_theta, sample_phi)-np.sqrt(1/2)*AngleWaveFunction_2px(sample_theta, sample_phi)+np.sqrt(3/2)*AngleWaveFunction_2py(sample_theta, sample_phi))
+    sample_angle3 = np.sqrt(1/3)*(AngleWaveFunction_1s(sample_theta, sample_phi)-np.sqrt(1/2)*AngleWaveFunction_2px(sample_theta, sample_phi)-np.sqrt(3/2)*AngleWaveFunction_2py(sample_theta, sample_phi))
+
     sample_radius = np.multiply(sample_y, sample_angle)
+    sample_radius2 = np.multiply(sample_y, sample_angle2)
+    sample_radius3 = np.multiply(sample_y, sample_angle3)
 
     t_c = SphericalTo3DAxis_Matrix([matrix_abs(sample_radius).tolist(), sample_theta.tolist(), sample_phi.tolist()])
+    t_c2 = SphericalTo3DAxis_Matrix([matrix_abs(sample_radius2).tolist(), sample_theta.tolist(), sample_phi.tolist()])
+    t_c3 = SphericalTo3DAxis_Matrix([matrix_abs(sample_radius3).tolist(), sample_theta.tolist(), sample_phi.tolist()])
 
     ax = plt.axes(projection='3d')
+    ax.view_init(elev=16, azim=-72)
     ax.scatter3D(t_c[0], t_c[1], t_c[2], s=0.05, c=sample_y, cmap='cool')
+    ax.scatter3D(t_c2[0], t_c2[1], t_c2[2], s=0.05, c=sample_y, cmap='cool')
+    ax.scatter3D(t_c3[0], t_c3[1], t_c3[2], s=0.05, c=sample_y, cmap='cool')
+    ax.set_zlim(plt.xlim()[0] * 2, plt.xlim()[1] * 2)
+
+    plt.gca().set_box_aspect((1, 1, 2))
     plt.show()
+
+
+if __name__ == '__main__':
+    simulate(3, 3333)

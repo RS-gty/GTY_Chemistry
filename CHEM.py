@@ -414,5 +414,10 @@ if __name__ == '__main__':
     SeparateMatterIntoElements(M1)
     tac = time.perf_counter()
     print(tac-tic)
-    E1 = Equation(['Cu', 'HNO3'], ['Cu(NO3)2', 'NO', 'H2O'])
+    E1 = Equation(['Fe3O4', 'HNO3'], ['Fe(NO3)3', 'NO', 'H2O'])
     E1.self_display()
+    E2 = Equation(['Fe3O4', 'HNO3'], ['Fe(NO3)3', 'NO2', 'H2O'])
+    E2.self_display()
+    E3 = Equation(['Al', 'NaOH', 'H2O'], ['Na[Al(OH)4]', 'H2'])
+    E3.self_display()
+

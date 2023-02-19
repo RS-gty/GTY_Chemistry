@@ -66,7 +66,7 @@ def main():
     G1.register(a1, a2, a3, a4)
 
     G1.display()
-    G1.rotate(pi / 2)
+    G1.rotate(pi / 6)
     G1.display()
 
     initial()
